@@ -7,82 +7,90 @@ struct node {
     node *next;
 };
 
-node* createLL(int data);
 void print(node *list);
-node* add(int data, node *head);
+void add(int data, node **head);
 void deleteLast(node **head);
 
 int main() {
     node *head = NULL;
 
-    head = createLL(5);
-    // add(7, head);
-    // add(6, head);
-    // add(4, head);
-    print(head);
+    add(5, &head);
+    add(7, &head);
+    add(6, &head);
     deleteLast(&head);
-    head = createLL(99);
-    print(head);
+    add(9, &head);
+    add(1, &head);
+    deleteLast(&head);
+    deleteLast(&head);
+    deleteLast(&head);
+    deleteLast(&head);
 
     return 0;
 }
 
 void print(node *list) {
-    node *traversalPointer = list;
+    node *traversalHead = list;
 
-    while(traversalPointer != NULL) {
-        cout << traversalPointer->data;
-        if(traversalPointer->next != NULL) {
+    while(traversalHead != NULL) {
+        cout << traversalHead->data;
+        if(traversalHead->next != NULL) {
             cout << " -> ";
         }
 
-        traversalPointer = traversalPointer->next;
+        traversalHead = traversalHead->next;
+    }
+    if(list == NULL) {
+        cout << "Nothing to print";
     }
     cout << endl;
 }
 
-node* createLL(int data) {
-    return add(data, NULL);
-}
-
-node* add(int data, node *head) {
-    node *originalHead = head;
+void add(int data, node **head) {
+    node *traversalHead = *head;
     //Create node to be added
-    struct node *newData = (node*)malloc(sizeof(node));
+    node *newData = (node*)malloc(sizeof(node));
     newData->data = data;
     newData->next = NULL;
 
     //head is NULL only when linked list is empty
-    if(head == NULL) {
-        head = newData;
-        cout << "Add " << data << " to newly created singly linked list" << endl;
-        return head;
+    if(*head == NULL) {
+        *head = newData;
+        // cout << "Added " << data << ": ";
+        print(*head);
+        return;
     }
 
     //Traverse to last node
-    while(head->next != NULL) {
-        head = head -> next;
+    while((traversalHead)->next != NULL) {
+        traversalHead = traversalHead -> next;
     }
-    head->next = newData;
-    cout << "Add " << data << " to singly linked list" << endl;
-    return originalHead;
+    traversalHead->next = newData;
+    // cout << "Added " << data << ": ";
+    print(*head);
 }
 
 //Used double pointer to set head to NULL when no elements are present
 void deleteLast(node **head) {
     if(*head != NULL) {
+        node *traversalHead = *head;
         node* prev = NULL;
-        while((*head) -> next != NULL) {
-            prev = *head;
-            *head = (*head) -> next;
+        while(traversalHead -> next != NULL) {
+            prev = traversalHead;
+            traversalHead = traversalHead -> next;
         }
         if(prev != NULL) {
             prev->next = NULL;
         }
-        if(*head != NULL) {
-            cout << "Delete " << (*head)->data << " from end of singly linked list" << endl;
-            free(*head);
-            *head = NULL;
+        if(traversalHead != NULL) {
+            // cout << "Deleted " << traversalHead->data << ": ";
+
+            //This condition satisfies when we delete the only element in the list
+            if(*head == traversalHead) {
+                *head = NULL;
+            }
+            free(traversalHead);
+
+            print(*head);
         }
     }
 }
